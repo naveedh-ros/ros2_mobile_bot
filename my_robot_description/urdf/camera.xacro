@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+    <xacro:property name="camera_length" value="0.01"/>
+    <xacro:property name="camera_width" value="0.1"/>
+    <xacro:property name="camera_height" value="0.05"/>
+
+    <link name="camera_link">
+        <visual>
+            <geometry>
+                <box size="${camera_length} ${camera_width} ${camera_height}" />
+            </geometry>
+            <material name="grey" />
+        </visual>
+        <collision>
+            <geometry>
+                <box size="${camera_length} ${camera_width} ${camera_height}" />
+            </geometry>
+        </collision> 
+        <xacro:box_inertia m="0.1" l="${2*camera_length}" w="${2*camera_width}" h="${2*camera_height}" xyz="${base_length+camera_length} 0 ${base_height}" rpy="0 0 0" />
+    </link>
+
+    <joint name="base_camera_joint" type="fixed">
+        <child link="camera_link"/>
+        <parent link="base_link"/>
+        <origin xyz="${(base_length+camera_length)/2.0} 0 ${base_height/2.0}" rpy="0 0 0" />
+    </joint>
+
+
+    <gazebo reference="camera_link">
+    <ros>
+        <namespace>/camera</namespace>
+    </ros>
+        <material>Gazebo/Red</material>
+        <sensor name="camera_sensor" type="camera">
+            <pose>0 0 0 0 0 0</pose>
+            <visualize>true</visualize>
+            <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
+                <frame_name>camera_link</frame_name>
+            </plugin>
+        </sensor>
+    </gazebo>
+</robot>
